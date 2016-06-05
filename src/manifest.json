@@ -14,10 +14,10 @@
     "storage", 
     "http://*/*", 
     "https://*/*",
-    "https://ajax.googleapis.com/",
+    "https://ajax.googleapis.com/"
   ],
   "background": {
-    "scripts": ["mouseEvents.js", "keyboardEvents.js"],
+    "scripts": ["keyboardEvents.js"],
     "persistent": false
   },
   "commands": {
@@ -34,6 +34,6 @@
         "mac": "Command+Shift+Tab"
       },
       "description": "Go to previous tab"
-    },
+    }
   }
 }

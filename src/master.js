@@ -37,7 +37,7 @@ function activateTab(tabId){
 function switchTab() {
   getTabsInCurrentWindow(function(tabs){
     console.log(tabs);
-    activateTab(tabs[tabs.length - 1].id);
+    //activateTab(tabs[tabs.length - 1].id);
 
     //renderStatus(tabs);
     //activateTab()
