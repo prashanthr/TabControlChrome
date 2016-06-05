@@ -14,11 +14,12 @@
     "storage", 
     "http://*/*", 
     "https://*/*",
-    "https://ajax.googleapis.com/"
+    "https://ajax.googleapis.com/",
+    "input"
   ],
   "background": {
     "scripts": ["eventPage.js"],
-    "persistent": false
+    "persistent": true
   },
   "commands": {
     "playPause": {
