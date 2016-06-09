@@ -8,5 +8,5 @@ function renderMessage(message) {
 
 document.addEventListener('DOMContentLoaded', function() {
   var message = 'Tab Control is active. \n' + 'You can duplicate any tab by pressing Alt+Shift+D';
-  renderStatus(message);
+  renderMessage(message);
 });
