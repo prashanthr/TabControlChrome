@@ -15,7 +15,8 @@ function handleCommand(command) {
 		case 'mute-tab':
 			getCurrentTab((tabs) => {
 				muteTab(tabs[0]);
-			})
+			});
+			break;
 		default:			
 			break;
 	}
