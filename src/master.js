@@ -7,6 +7,8 @@ function renderMessage(message) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var message = 'Tab Control is active. \n' + 'You can duplicate any tab by pressing Alt+Shift+D';
+  var message = 'Tab Control is active. \n' 
+  message += 'Duplicate Tabs: Alt+Shift+D' + '\n';
+  message += 'Toggle mute: Alt+Shift+M';
   renderMessage(message);
 });
