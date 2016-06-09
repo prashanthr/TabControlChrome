@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Tab Control",
-  "description": "This extension allows control of tabs from keyboard/mouse",
+  "description": "This extension allows the use of a few keyboard shortcuts to perform common tab actions",
   "version": "1.0",
   "browser_action": {
     "default_icon": "icon.png",
@@ -14,41 +14,19 @@
     "storage", 
     "http://*/*", 
     "https://*/*",
-    "https://ajax.googleapis.com/",
-    "input"
+    "https://ajax.googleapis.com/"
   ],
   "background": {
     "scripts": ["eventPage.js"],
     "persistent": true
   },
   "commands": {
-    "playPause": {
+    "duplicate-tab": {
       "suggested_key": {
-        "default": "MediaPlayPause"
+        "default": "Alt+Shift+D",
+        "mac": "Alt+Shift+D"
       },
-      "global": true,
-      "description": "Toggle play/pause"
-    },   
-    "first-tab": {
-      "suggested_key": {
-        "default": "Ctrl+1",
-        "mac": "Command+1"
-      },
-      "description": "Go to first tab"
-    },
-    "previous-tab": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Tab",
-        "mac": "Command+Shift+Tab"
-      },
-      "description": "Go to previous tab"
-    },
-    "toggle-feature-foo": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Y",
-        "mac": "Command+Shift+Y"
-      },
-      "description": "Toggle feature foo"
+      "description": "Duplicate Tab"
     }
   }
 }

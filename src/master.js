@@ -34,16 +34,6 @@ function activateTab(tabId){
   chrome.tabs.update(tabId, {selected: true});
 }
 
-function switchTab() {
-  getTabsInCurrentWindow(function(tabs){
-    console.log(tabs);
-    //activateTab(tabs[tabs.length - 1].id);
-
-    //renderStatus(tabs);
-    //activateTab()
-  });
-}
-
 function getBackgroundPage() {
   return chrome.extension.getBackgroundPage();
 }
