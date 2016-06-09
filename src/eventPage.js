@@ -24,3 +24,17 @@ function getCurrentTab(callback) {
 function duplicateTab(tab) {
 	chrome.tabs.duplicate(tab.id, null);
 }
+
+function activateTab(tabId){
+  chrome.tabs.update(tabId, {selected: true});
+}
+
+function getTabsInCurrentWindow(callback) {
+  var queryInfo = {    
+    currentWindow: true
+  };
+
+  chrome.tabs.query(queryInfo, function(tabs) {    
+    callback(tabs);
+  });
+}
