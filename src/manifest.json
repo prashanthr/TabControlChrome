@@ -3,7 +3,7 @@
 
   "name": "Tab Control",
   "description": "This extension allows the use of a few keyboard shortcuts to perform common tab actions",
-  "version": "1.0",
+  "version": "0.5",
   "icons": {"128": "tab.png"},
   "browser_action": {
     "default_icon": "tab.png",
