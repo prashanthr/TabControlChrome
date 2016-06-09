@@ -18,7 +18,7 @@
   ],
   "background": {
     "scripts": ["eventPage.js"],
-    "persistent": true
+    "persistent": false
   },
   "commands": {
     "duplicate-tab": {
