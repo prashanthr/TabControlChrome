@@ -49,3 +49,7 @@ function getTabsInCurrentWindow(callback) {
     callback(tabs);
   });
 }
+
+document.addEventListener("click", function(){
+    console.log('clickRegistered');
+});
