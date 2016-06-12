@@ -15,17 +15,17 @@ sendRuntimeMessage({greeting: "hello"}, log);
 var cmdCache = [];//IMouseAction
 var cmdState = [{
 		type: null,
-		which: 1,
+		button: 0, //Left
 		time: null,
 	},
 	{
 		type: null,
-		which: 2,
+		button: 1, //Middle
 		time: null,
 	},	
 	{
 		type: null,
-		which: 3,
+		button: 2, //Right
 		time: null,
 	}
 ];
@@ -43,32 +43,38 @@ function captureMouseEvent(event) {
 
 function handleEvent() {
 	console.log('cmdState', cmdState);
+	let rightMouse = getCmdState(2);
+	let leftMouse = getCmdState(0);
+	if(leftMouse.type === 'mousedown' && rightMouse.type === 'mousedown') {
+		console.log('Tab jump command detected');
+		sendRuntimeMessage({type: 'cmd', data: 'jump'}, log);
+	}
 }
 
 function addCmdToCache(event) {
 	cmdCache.unshift({
 		type: event.type,
-		which: event.which,
+		button: event.button,
 		time: Date.now()
 	});
 }
 function updateState(event) {
-	let cmdIndex = getCmdStateIndex(event.which);
+	let cmdIndex = getCmdStateIndex(event.button);
 	if(cmdIndex !== -1) {
 		cmdState[cmdIndex].type = event.type;
 		cmdState[cmdIndex].time = Date.now();
 	}
 }
 
-function getCmdState(which) {
+function getCmdState(button) {
 	let cmd = cmdState.find((cmd) => {
-		return cmd.which === which
+		return cmd.button === button
 	});
 	return cmd;
 }
-function getCmdStateIndex(which) {
+function getCmdStateIndex(button) {
 	let cmdIndex = cmdState.findIndex((cmd) => {
-		return cmd.which === which
+		return cmd.button === button
 	});
 	return cmdIndex;
 }

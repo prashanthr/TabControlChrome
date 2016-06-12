@@ -1,4 +1,5 @@
 console.log('Background page running [eventPage.js]');
+var tabCache = [];
 chrome.commands.onCommand.addListener(function(command) {
         handleCommand(command);
 });
@@ -17,6 +18,8 @@ function handleCommand(command) {
 				muteTab(tabs[0]);
 			});
 			break;
+		case 'jump':
+			console.log('jumper');
 		default:			
 			break;
 	}
@@ -55,6 +58,11 @@ chrome.runtime.onMessage.addListener(
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url :
                 "from the extension");
-    if (request.greeting == "hello")
-      sendResponse({farewell: "goodbye"});
-  });
+    /*if (request.greeting == "hello")
+      sendResponse({farewell: "goodbye"});*/
+  	if(request) {
+  		if(request.type === 'cmd') {
+  			handleCommand(request.data);
+  		}
+  	}
+});
