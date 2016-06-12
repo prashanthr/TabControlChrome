@@ -1,6 +1,7 @@
 console.log('Content script running [eventContentScript.js]');
 document.body.addEventListener('mousedown', captureMouseEvent, true);
 document.body.addEventListener('mouseup', captureMouseEvent, true);
+document.body.addEventListener('mousewheel', captureMouseEvent, true);
 
 function log(msg) {
 	console.log(msg);
@@ -35,7 +36,6 @@ function sendRuntimeMessage(message, callback) {
 	chrome.runtime.sendMessage(message, callback);
 }
 function captureMouseEvent(event) {
-	console.log('cmdEvent', event);
 	addCmdToCache(event);
 	updateState(event);
 	handleEvent();
@@ -48,6 +48,9 @@ function handleEvent() {
 	if(leftMouse.type === 'mousedown' && rightMouse.type === 'mousedown') {
 		console.log('Tab jump command detected');
 		sendRuntimeMessage({type: 'cmd', data: 'jump'}, log);
+	} else if(leftMouse.type === 'mousewheel' && rightMouse.type === 'mousedown') {
+		console.log('Mouse scroll command detected');
+		sendRuntimeMessage({type: 'cmd', data: 'scroll'}, log);
 	}
 }
 
