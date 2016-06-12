@@ -1,9 +1,18 @@
 console.log('Background page running [eventPage.js]');
-var tabCache = [];
+var tabCache = {
+	current: null,
+	previous: null
+};
+//Listeners
 chrome.commands.onCommand.addListener(function(command) {
         handleCommand(command);
 });
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+	tabCache.previous = tabCache.current;
+	tabCache.current = activeInfo.tabId;
+});
 
+//Handlers
 function handleCommand(command) {
 	console.log('Command Registered:', command);
 	switch(command) {
@@ -19,12 +28,21 @@ function handleCommand(command) {
 			});
 			break;
 		case 'jump':
-			console.log('jumper');
+			jumpTab();
+			break;
 		default:			
 			break;
 	}
 }
 
+function jumpTab() {
+	console.log('tabCache', tabCache);
+	if(tabCache.current && tabCache.previous 
+		&& tabCache.current !== null && tabCache.previous !== null) {
+		console.log(true);
+		activateTab(tabCache.previous);
+	}
+}
 function getCurrentTab(callback) {
 	return chrome.tabs.query({active: true}, callback);
 }

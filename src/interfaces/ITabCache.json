@@ -1,4 +1,4 @@
 {
-	"current": "int" //tab index
+	"current": "int", //tab index
 	"previous": "int" //tab index
 }
