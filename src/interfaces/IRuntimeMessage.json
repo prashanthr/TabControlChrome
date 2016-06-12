@@ -1,0 +1,4 @@
+{
+	"type": "string", //command, message
+	"data": "any", //string, IMouseAction
+}
