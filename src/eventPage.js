@@ -1,15 +1,62 @@
 console.log('Background page running [eventPage.js]');
-var tabCache = {
+//Init State
+var tabState = {
 	current: null,
 	previous: null
 };
+
+var tabCache = []
+
+var cmdCache = [];//IMouseAction
+var cmdState = [{
+		type: null,
+		button: 0, //Left
+		time: null,
+	},
+	{
+		type: null,
+		button: 1, //Middle
+		time: null,
+	},	
+	{
+		type: null,
+		button: 2, //Right
+		time: null,
+	}
+];
+
+
 //Listeners
 chrome.commands.onCommand.addListener(function(command) {
     handleCommand(command);
 });
 chrome.tabs.onActivated.addListener(function (activeInfo) {
-	tabCache.previous = tabCache.current;
-	tabCache.current = activeInfo.tabId;
+	tabState.previous = tabState.current;
+	tabState.current = activeInfo.tabId;
+});
+chrome.tabs.onRemoved(function(removeInfo) {	
+	if(tabState.previous === removeInfo.tabId) {
+
+	}	
+});
+
+//Message Listener
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+    /*if (request.greeting == "hello")
+      sendResponse({farewell: "goodbye"});*/
+  	if(request) {
+  		if(request.type === 'cmd') {
+  			handleCommand(request.data);
+  		} 
+
+  		if(request.type === 'mouseEvent') {
+  			handleMouseEvent(request.data);
+  		}
+  	}
 });
 
 //Handlers
@@ -37,20 +84,29 @@ function handleCommand(command) {
 	}
 }
 
+function handleMouseEvent(event) {
+	console.log('event');
+	addCmdToCache(event);
+	updateState(event);
+	handleEvent();
+}
+
+//Actions
 function jumpTab() {
-	console.log('tabCache', tabCache);
-	if(tabCache.current 
-		&& tabCache.previous 
-		&& tabCache.current !== null 
-		&& tabCache.previous !== null) {		
-		activateTab(tabCache.previous);
+	console.log('tabState', tabState);
+	if(tabState.current 
+		&& tabState.previous 
+		&& tabState.current !== null 
+		&& tabState.previous !== null) {		
+		activateTab(tabState.previous);
 	}
 }
 
 function scrollTab() {
 	getTabsInCurrentWindow(function(tabs) {
-		console.log('tabs', tabs);
 		getCurrentTab(function(ts) {			
+			console.log('tabs', tabs);
+			console.log('ts', ts);
 			let currentTabIndex = findTabIndex(tabs, ts[0]);
 			console.log(currentTabIndex);
 			if(currentTabIndex !== -1) {
@@ -62,17 +118,14 @@ function scrollTab() {
 }
 
 function findTabIndex(tabs, tab) {
-	let index = -1;
-	if(tabs && tab) {
-		index = tabs.findIndex((t) => {
+	index = tabs.findIndex((t) => {
 			return t.id === tab.id;
-		});
-	}
+		});	
 	return index;
 }
 
 function getCurrentTab(callback) {
-	return chrome.tabs.query({active: true}, callback);	
+	return chrome.tabs.query({active: true, currentWindow: true}, callback);	
 }
 
 //Duplicates the tab and switches to it
@@ -99,16 +152,45 @@ function getTabsInCurrentWindow(callback) {
   });
 }
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                "from the extension");
-    /*if (request.greeting == "hello")
-      sendResponse({farewell: "goodbye"});*/
-  	if(request) {
-  		if(request.type === 'cmd') {
-  			handleCommand(request.data);
-  		}
-  	}
-});
+//State Management
+function addCmdToCache(event) {
+	cmdCache.unshift({
+		type: event.type,
+		button: event.button,
+		time: Date.now()
+	});
+}
+
+function updateState(event) {
+	let cmdIndex = getCmdStateIndex(event.button);
+	if(cmdIndex !== -1) {
+		cmdState[cmdIndex].type = event.type;
+		cmdState[cmdIndex].time = Date.now();
+	}
+}
+
+function getCmdState(button) {
+	let cmd = cmdState.find((cmd) => {
+		return cmd.button === button
+	});
+	return cmd;
+}
+function getCmdStateIndex(button) {
+	let cmdIndex = cmdState.findIndex((cmd) => {
+		return cmd.button === button
+	});
+	return cmdIndex;
+}
+
+function handleEvent() {
+	console.log('cmdState', cmdState);
+	let rightMouse = getCmdState(2);
+	let leftMouse = getCmdState(0);
+	if(leftMouse.type === 'mousedown' && rightMouse.type === 'mousedown') {
+		console.log('Tab jump command detected');
+		handleCommand('jump');
+	} else if(leftMouse.type === 'mousewheel' && rightMouse.type === 'mousedown') {
+		console.log('Mouse scroll command detected');
+		handleCommand('scroll');
+	}
+}

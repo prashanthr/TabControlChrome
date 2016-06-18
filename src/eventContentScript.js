@@ -13,6 +13,7 @@ function log(msg) {
 
 sendRuntimeMessage({greeting: "hello"}, log);
 
+//These should probably be managed in the background script
 var cmdCache = [];//IMouseAction
 var cmdState = [{
 		type: null,
@@ -36,9 +37,14 @@ function sendRuntimeMessage(message, callback) {
 	chrome.runtime.sendMessage(message, callback);
 }
 function captureMouseEvent(event) {
-	addCmdToCache(event);
+	console.log('cmdEvent', event.button, event.type);
+	/*addCmdToCache(event);
 	updateState(event);
-	handleEvent();
+	handleEvent();*/
+	sendRuntimeMessage({type: 'mouseEvent', data: { 
+		button: event.button,
+		type: event.type
+	}}, log);
 }
 
 function handleEvent() {
@@ -81,4 +87,3 @@ function getCmdStateIndex(button) {
 	});
 	return cmdIndex;
 }
-
