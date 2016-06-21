@@ -16,8 +16,7 @@
     "tabs",
     "notifications",     
     "http://*/*", 
-    "https://*/*",
-    "https://ajax.googleapis.com/"
+    "https://*/*"        
   ],
   "background": {
     "scripts": ["eventPage.js"],

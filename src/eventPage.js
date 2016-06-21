@@ -31,12 +31,24 @@ chrome.commands.onCommand.addListener(function(command) {
     handleCommand(command);
 });
 chrome.tabs.onActivated.addListener(function (activeInfo) {
-	tabState.previous = tabState.current;
-	tabState.current = activeInfo.tabId;
-});
-chrome.tabs.onRemoved(function(removeInfo) {	
-	if(tabState.previous === removeInfo.tabId) {
+	var currentTabId = activeInfo.tabId;
+	//Tab State
+	tabState.previous = tabState.current 
+			? tabState.current : currentTabId;
+	tabState.current = currentTabId;
 
+});
+chrome.tabs.onRemoved.addListener(function(removeInfo) {	
+	//Handle tab state when a tab in tab state is closed
+	if(tabState.previous === removeInfo.tabId) {
+		getCurrentTabId((id) => {
+			tabState.previous = (id !== null) 
+				? id 
+				: null;
+		});				
+	}
+	else if(tabState.current === removeInfo){
+		//Active listener already kicks in
 	}	
 });
 
@@ -105,8 +117,6 @@ function jumpTab() {
 function scrollTab() {
 	getTabsInCurrentWindow(function(tabs) {
 		getCurrentTab(function(ts) {			
-			console.log('tabs', tabs);
-			console.log('ts', ts);
 			let currentTabIndex = findTabIndex(tabs, ts[0]);
 			console.log(currentTabIndex);
 			if(currentTabIndex !== -1) {
@@ -128,6 +138,28 @@ function getCurrentTab(callback) {
 	return chrome.tabs.query({active: true, currentWindow: true}, callback);	
 }
 
+function getCurrentTabId(callback) {
+	getTabsInCurrentWindow(function(tabs) {
+		getCurrentTab(function(ts) {			
+			let currentTabIndex = findTabIndex(tabs, ts[0]);
+			let tabId = currentTabIndex !== -1 
+			? tabs[currentTabIndex].id : null;
+			callback(tabId);
+		})
+	});
+}
+
+function getCurrentTabInWindow(callback) {
+	getTabsInCurrentWindow(function(tabs) {
+		getCurrentTab(function(ts) {			
+			let currentTabIndex = findTabIndex(tabs, ts[0]);
+			let tab = currentTabIndex !== -1 
+			? tabs[currentTabIndex] : null;
+			callback(tabId);
+		})
+	});
+}
+
 //Duplicates the tab and switches to it
 function duplicateTab(tab) {
 	chrome.tabs.duplicate(tab.id, null);
@@ -139,7 +171,7 @@ function muteTab(tab) {
 }
 
 function activateTab(tabId){
-  chrome.tabs.update(tabId, {selected: true});
+  chrome.tabs.update(tabId, {active: true});
 }
 
 function getTabsInCurrentWindow(callback) {

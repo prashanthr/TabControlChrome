@@ -1,4 +1,4 @@
-{
-	"current": "int", //tab index
-	"previous": "int" //tab index
-}
+[{
+	"id": "int", //current tab index
+	"previous": "int" //previous tab index
+}]
