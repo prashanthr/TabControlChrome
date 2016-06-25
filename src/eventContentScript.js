@@ -47,6 +47,7 @@ function captureMouseEvent(event) {
 	}}, log);
 }
 
+
 function handleEvent() {
 	console.log('cmdState', cmdState);
 	let rightMouse = getCmdState(2);

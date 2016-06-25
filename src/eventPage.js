@@ -32,6 +32,9 @@ chrome.commands.onCommand.addListener(function(command) {
 });
 chrome.tabs.onActivated.addListener(function (activeInfo) {
 	var currentTabId = activeInfo.tabId;
+	/*if(isInvalidTabId(currentTabId)) {
+		return;
+	}*/
 	//Tab State
 	tabState.previous = tabState.current 
 			? tabState.current : currentTabId;
@@ -111,17 +114,25 @@ function jumpTab() {
 		&& tabState.current !== null 
 		&& tabState.previous !== null) {		
 		activateTab(tabState.previous);
+	} else {
+		console.log('Cannot jump. Current or previous tab does not exist or is invalid');
 	}
 }
 
 function scrollTab() {
 	getTabsInCurrentWindow(function(tabs) {
 		getCurrentTab(function(ts) {			
-			let currentTabIndex = findTabIndex(tabs, ts[0]);
+			let tab = ts[0];
+			let currentTabIndex = findTabIndex(tabs, tab);
 			console.log(currentTabIndex);
 			if(currentTabIndex !== -1) {
 				let nextTabIndex = currentTabIndex === tabs.length - 1 ? 0 : currentTabIndex + 1;
-				activateTab(tabs[nextTabIndex].id);
+				let nextTab = tabs[nextTabIndex];
+				/*while(isInvalidTab(nextTab)) {
+					nextTabIndex = nextTabIndex === tabs.length - 1 ? 0 : nextTabIndex + 1;
+					nextTab[nextTabIndex]; 
+				}*/
+				activateTab(nextTab.id);
 			}
 		});
 	});
@@ -158,6 +169,25 @@ function getCurrentTabInWindow(callback) {
 			callback(tabId);
 		})
 	});
+}
+
+function isInvalidTabId(tabId) {
+	getTabById(tabId, function(tabs) {
+		if(tabs && tabs.length > 0) {
+			var tab = tabs[0];
+			return isInvalidTab(tab);
+		}
+	});
+	
+}
+
+function isInvalidTab(tab) {
+	return tab && tab.url 
+			? tab.url.startsWith('chrome://') : false;	
+}
+
+function getTabById(tabId, callback) {
+	chrome.tabs.query({id: tabId}, callback);
 }
 
 //Duplicates the tab and switches to it
@@ -201,6 +231,25 @@ function updateState(event) {
 	}
 }
 
+function resetCommandState() {
+	var now = Date.now();
+	cmdState = [{
+		type: null,
+		button: 0, //Left
+		time: now,
+	},
+	{
+		type: null,
+		button: 1, //Middle
+		time: now,
+	},	
+	{
+		type: null,
+		button: 2, //Right
+		time: now,
+	}];
+}
+
 function getCmdState(button) {
 	let cmd = cmdState.find((cmd) => {
 		return cmd.button === button
@@ -218,6 +267,9 @@ function handleEvent() {
 	console.log('cmdState', cmdState);
 	let rightMouse = getCmdState(2);
 	let leftMouse = getCmdState(0);
+	if(rightMouse.type === 'mouseup') {
+		resetCommandState();
+	}
 	if(leftMouse.type === 'mousedown' && rightMouse.type === 'mousedown') {
 		console.log('Tab jump command detected');
 		handleCommand('jump');
