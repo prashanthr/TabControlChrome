@@ -1,0 +1,5 @@
+{
+	"type": "string", //mouseup, mousedown, click
+	"button": "number", //0,1,2
+	"time": "Date"
+}

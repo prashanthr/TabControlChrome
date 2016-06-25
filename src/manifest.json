@@ -12,15 +12,22 @@
   },  
   "permissions": [
     "activeTab",    
-    "storage", 
+    "storage",
+    "tabs",
+    "notifications",     
     "http://*/*", 
-    "https://*/*",
-    "https://ajax.googleapis.com/"
+    "https://*/*"        
   ],
   "background": {
     "scripts": ["eventPage.js"],
     "persistent": false
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["eventContentScript.js"]
+    }
+  ],
   "commands": {
     "duplicate-tab": {
       "suggested_key": {
