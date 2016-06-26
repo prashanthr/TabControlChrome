@@ -55,6 +55,12 @@ chrome.tabs.onRemoved.addListener(function(removeInfo) {
 	}	
 });
 
+//Message Sender
+function sendTabMessage(tabId, message) {
+	chrome.tabs.sendMessage(tabId, message);	
+}
+
+
 //Message Listener
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -77,6 +83,7 @@ chrome.runtime.onMessage.addListener(
 //Handlers
 function handleCommand(command) {
 	console.log('Command Registered:', command);
+	let tabSwitchEventHandled = false;
 	switch(command) {
 		case 'duplicate-tab':
 			getCurrentTab((tabs) => {				
@@ -90,13 +97,20 @@ function handleCommand(command) {
 			break;
 		case 'jump':
 			jumpTab();
+			tabSwitchEventHandled = true;
 			break;
 		case 'scroll':
 			scrollTab();
+			tabSwitchEventHandled = true;
 			break;	
 		default:			
 			break;
 	}
+	if(tabSwitchEventHandled) {
+		getCurrentTabId(function (tabId) {
+			sendTabMessage(tabId, {type: 'tabSwitch', complete: true});
+		});
+	} 	
 }
 
 function handleMouseEvent(event) {
@@ -267,7 +281,7 @@ function handleEvent() {
 	console.log('cmdState', cmdState);
 	let rightMouse = getCmdState(2);
 	let leftMouse = getCmdState(0);
-	if(rightMouse.type === 'mouseup') {
+	if(rightMouse.type === 'mouseup' || (leftMouse.type === 'mouseup' && rightMouse.type === 'mouseup')) {
 		resetCommandState();
 	}
 	if(leftMouse.type === 'mousedown' && rightMouse.type === 'mousedown') {
@@ -276,5 +290,5 @@ function handleEvent() {
 	} else if(leftMouse.type === 'mousewheel' && rightMouse.type === 'mousedown') {
 		console.log('Mouse scroll command detected');
 		handleCommand('scroll');
-	}
+	} 	
 }

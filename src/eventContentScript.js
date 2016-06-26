@@ -32,6 +32,21 @@ var cmdState = [{
 	}
 ];
 
+chrome.runtime.onMessage.addListener(receiveRuntimeMessage);
+function receiveRuntimeMessage(message, sender, sendResponseFn) {
+		if(message) {
+			if (message.type === 'tabSwitch' && message.complete) {
+				//toggleContextMenu(false);
+				//window.setTimeout(toggleContextMenu(true), 2000);
+			} 
+		}
+}
+
+function toggleContextMenu(OnOrOff) {
+	document.oncontextmenu = function(OnOrOff) {
+		return OnOrOff;
+	}
+}
 
 function sendRuntimeMessage(message, callback) {
 	chrome.runtime.sendMessage(message, callback);
